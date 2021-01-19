@@ -64,7 +64,7 @@ data = ImageFolder (root = 'gtsrb', transform = transforms.Compose ([
     transforms.Normalize (mean = (0, 0, 0), std = (1, 1, 1))
 ]))
 
-cut_point = int(TEST_SIZE * len (data))
+cut_point = int (TEST_SIZE * len (data))
 training_data, test_data = torch.utils.data.random_split (
     data,
     [len (data) - cut_point, cut_point]
@@ -111,13 +111,14 @@ for epoch in range (EPOCHS):
         running_loss += loss.item ()
         if i % BATCHES_PER_PRINT == BATCHES_PER_PRINT - 1: 
             print (
-                '[%d, %5d] loss: %.3f' %
-                (epoch + 1, i + 1, running_loss / BATCHES_PER_PRINT)
+                '[%d, %5d] loss: %.3f, accuracy: %.3f' % (
+                    epoch + 1
+                    , i + 1
+                    , running_loss / BATCHES_PER_PRINT
+                    , correct / BATCHES_PER_PRINT
+                )
             )
             running_loss = 0.0
-            print (
-                'accuracy: %.3f' % (correct / BATCHES_PER_PRINT)
-            )
             correct = 0.0
 
 print ('Finished Training')
@@ -135,25 +136,3 @@ with torch.set_grad_enabled (False):
         correct += (sum (max_indices == local_labels) / len(local_labels)).item ()
     print ('Loss', running_loss / len (test_provider))
     print ('Accuracy', correct / len (test_provider))
-
-"""
-print(net)
-
-input = torch.randn(1, 1, 32, 32)
-out = net(input)
-print(out)
-
-optimizer = optim.SGD(net.parameters(), lr=0.01)
-target = torch.randn(10)  # a dummy target, for example
-target = target.view(1, -1)  # make it the same shape as output
-criterion = nn.MSELoss()
-
-for i in range(10):
-    optimizer.zero_grad()
-    output = net(input)
-    loss = criterion(output, target)
-    print(loss)
-    loss.backward()
-    optimizer.step()
-"""
-
